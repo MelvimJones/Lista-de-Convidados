@@ -99,7 +99,7 @@
 }
 
 .v-table>.v-table__wrapper>table>tbody>tr>td {
-    padding: 0px;
+    padding: 0 5px;
     height: 10px;
 }
 
