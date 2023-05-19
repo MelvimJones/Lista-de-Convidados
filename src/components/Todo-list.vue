@@ -13,6 +13,11 @@
                         <v-card>
                             <v-card-title class="text-center">
                                 <h2>Convidados</h2>
+                                <div class="total">
+                                    <strong>TOTAL:</strong>
+                                    {{ pessoas.length }}
+                                </div>
+                                
                             </v-card-title>
                             <v-card-text>
 
@@ -22,17 +27,17 @@
                                 <v-card class="mx-auto" color="grey-lighten-3" max-width="400">
                                     <v-card-text>
                                         <!-- IMPUT PARA SALVAR -->
-                                        <v-text-field v-if="contador == 0" v-model="username" density="compact"
+                                        <v-text-field v-if="contador == 0" v-model="pessoa.nome" density="compact"
                                             variant="solo" label="Convidados" append-inner-icon="mdi-content-save"
-                                            single-line hide-details @click:append-inner="adicionar()">
+                                            single-line hide-details @click:append-inner="cadastrarPessoas()">
                                         </v-text-field>
 
 
                                         <!-- IMPUT PARA EDITAR -->
-                                        <v-text-field v-if="contador == 1" v-model="username" density="compact"
+                                        <v-text-field v-if="contador == 1" v-model="pessoa.nome" density="compact"
                                             variant="solo" label="Convidados"
                                             append-inner-icon="mdi-content-save-edit-outline" single-line hide-details
-                                            @click:append-inner="salvar()">
+                                            @click:append-inner="alterarPessoa()">
                                         </v-text-field>
                                     </v-card-text>
                                 </v-card>
@@ -56,17 +61,19 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(post, i) in lista" :key="post">
-                                            <td class="quant">{{ i }}</td>
-                                            <td class="nome">{{ post }}</td>
+                                        <tr v-for="(post, i) in pessoas" :key="post">
+                                            <td class="quant">{{ i + 1 }}</td>
+                                            <td class="nome">{{ post.nome }}</td>
                                             <td>
                                                 <div class="botoesD">
                                                     <v-col cols="auto">
                                                         <v-btn density="compact" icon="mdi-trash-can-outline"
-                                                            @click="excluir(i)" style="background-color: #c98f8f;"></v-btn>
+                                                            @click="deletarPessoa(post._id, i)"
+                                                            style="background-color: #c98f8f;"></v-btn>
                                                     </v-col>
                                                     <v-col cols="auto">
-                                                        <v-btn density="compact" icon="mdi-pencil" @click="editar(i)"
+                                                        <v-btn density="compact" icon="mdi-pencil"
+                                                            @click="editarPessoa(id, i)"
                                                             style="background-color: #aaeded;"></v-btn>
                                                     </v-col>
                                                 </div>
@@ -93,6 +100,12 @@
 </template>
     
 <style>
+.v-locale--is-ltr {
+    background-color: #e5d1b8;
+}
+.total{
+    font-family: math;
+}
 .v-table>.v-table__wrapper>table>thead>tr>th {
     padding: 0 5px;
     height: auto;
@@ -136,39 +149,83 @@
 </style>
       
 <script>
+import axios from 'axios'
+
 export default {
+
     data() {
         return {
             username: "",
             contador: 0,
             lista: [],
-            posicao: ""
+            posicao: "",
+            pessoas: [],
+            pessoa: {}
+
+
         };
     },
-    methods: {
-        adicionar() {
-            this.lista.push(this.username)
-            this.username = ""
-            console.log(this.lista);
-        },
-        salvar() {
-            this.lista[this.posicao] = this.username
-            this.contador = 0
-            this.username = ""
-            console.log(this.lista);
 
+    methods: {
+
+        // ------------CARREGAR TELA ---------------------------
+        async carregarPessoas() {
+            //request para API, que retorna uma promisse 
+            let request = await axios.get("https://api-my-app32-git-main-melvimjones.vercel.app/person")
+
+            //Ao finalizar o request, carregue os dados em json
+            this.pessoas = await request.data
+
+            //exibir no consoel
+            console.log(this.pessoas)
         },
-        excluir(i) {
-            this.lista.splice(i, 1)
-            return this.lista
+
+        // ------------CADASTRAR PESSOAS ---------------------------
+        async cadastrarPessoas() {
+            let request = await axios.post("https://api-my-app32-git-main-melvimjones.vercel.app/person", this.pessoa)
+            let people = await request.data
+            //Add na array
+            this.pessoas.push(people)
+            //Carregar tela
+            this.carregarPessoas()
+            //Limpar imput
+            this.pessoa.nome = ""
+            //mostar no console
+            console.log(this.pessoas);
         },
-        editar(i) {
-            this.username = this.lista[i]
-            this.posicao = i
+
+        async editarPessoa(id, i) {
+            //acessar do array e colocar no imput
+            this.pessoa = { ...this.pessoas[i] }
+            //this.posicao = i
             this.contador = 1
+        },
+
+        async alterarPessoa() {
+            await axios.patch("https://api-my-app32-git-main-melvimjones.vercel.app/person/" + this.pessoa._id, this.pessoa)
+            //alterar na tela
+            this.carregarPessoas()
+            //Limpar imput
+            this.pessoa.nome = ""
+            this.contador = 0
+        },
+
+        async deletarPessoa(id, i) {
+            await axios.delete("https://api-my-app32-git-main-melvimjones.vercel.app/person/" + id)
+            //excluir do array
+            this.pessoas.splice(i, 1)
+            this.pessoa.nome = ""
+            this.carregarPessoas()
+
         }
 
 
+        /* ------------------------------------------------------------------------------------------------------------------ */
+
+    },
+    async created() {
+        console.log("Created....")
+        await this.carregarPessoas()
     }
 };
 </script>

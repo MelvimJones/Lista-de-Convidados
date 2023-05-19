@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main>
-      <TodoList/>
+      <TodoList />
     </v-main>
   </v-app>
 </template>
@@ -10,12 +10,14 @@
 
 import TodoList from './components/Todo-list.vue';
 
+
 export default {
+
   name: 'App',
 
   components: {
     TodoList,
-    
+
   },
 
   data: () => ({
