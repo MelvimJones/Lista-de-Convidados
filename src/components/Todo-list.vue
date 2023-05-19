@@ -233,7 +233,7 @@ export default {
             //temporizador
             setTimeout(() => {
                 this.mensagens.salvoSucesso = false
-            }, 500);
+            }, 1000);
 
             //mostar no console
             console.log(this.pessoas);
@@ -258,7 +258,7 @@ export default {
             //temporizador
             setTimeout(() => {
                 this.mensagens.alteradoSucesso = false
-            }, 500);
+            }, 1000);
         },
 
         async deletarPessoa(id, i) {
@@ -275,7 +275,7 @@ export default {
             //temporizador
             setTimeout(() => {
                 this.mensagens.excluidoSucesso = false
-            }, 500);
+            }, 1000);
 
             // --- carregar Tela----
 
