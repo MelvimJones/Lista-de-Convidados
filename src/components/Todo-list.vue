@@ -132,6 +132,7 @@
     width: 100%;
     height: auto;
 }
+
 .botoesD {
     display: flex;
     justify-content: flex-end;
@@ -173,8 +174,9 @@ export default {
 
             //Ao finalizar o request, carregue os dados em json
             this.pessoas = await request.data
+            this.pessoas.reverse()
+            //Quantidade Total
             this.quant = this.pessoas.length
-
             //exibir no consoel
             console.log(this.pessoas)
         },
@@ -210,6 +212,7 @@ export default {
         },
 
         async deletarPessoa(id, i) {
+
             await axios.delete("https://api-my-app32-git-main-melvimjones.vercel.app/person/" + id)
             //excluir do array
             this.pessoas.splice(i, 1)
@@ -217,13 +220,8 @@ export default {
             this.carregarPessoas()
 
         }
-
-
-        /* ------------------------------------------------------------------------------------------------------------------ */
-
     },
     async created() {
-        
         console.log("Created....")
         await this.carregarPessoas()
     }
