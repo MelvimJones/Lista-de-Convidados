@@ -43,6 +43,12 @@
                                 </v-card>
 
                                 <!-- -----------LISTA------------- -->
+                                <v-expand-transition>
+                                    <v-alert v-if="mensagens.excluidoSucesso" type="error">EXCLUÍDO</v-alert>
+                                    <v-alert v-if="mensagens.salvoSucesso" type="success">SUCESSO</v-alert>
+                                    <v-alert v-if="mensagens.alteradoSucesso" type="info">MODIFICADO</v-alert>
+                                </v-expand-transition>
+
 
                                 <!-- teste -->
                                 <v-table :headers="headers" :items="items" :item-key="itemKey" hide-default-footer
@@ -61,9 +67,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        
                                         <tr v-for="(post, i) in pessoas" :key="post">
                                             <td class="quant">{{ i + 1 }}</td>
-                                            <td class="nome">{{ post.nome }}</td>
+                                        <td class="nome">{{ post.nome }}</td>
                                             <td>
                                                 <div class="botoesD">
                                                     <v-col cols="auto">
@@ -100,6 +107,25 @@
 </template>
     
 <style>
+.bg-info {
+    display: flex;
+    padding: 1px;
+    justify-content: center;
+}
+
+.bg-error {
+    display: flex;
+    padding: 1px;
+    justify-content: center;
+}
+
+.bg-success {
+    display: flex;
+    padding: 1px;
+    justify-content: center;
+}
+
+
 .v-locale--is-ltr {
     background-color: #e5d1b8;
 }
@@ -155,6 +181,12 @@ export default {
 
     data() {
         return {
+            mensagens: {
+                salvoSucesso: false,
+                excluidoSucesso: false,
+                alteradoSucesso: false
+
+            },
             contador: 0,
             posicao: "",
             pessoas: [],
@@ -166,6 +198,9 @@ export default {
     },
 
     methods: {
+        async cancelar() {
+            this.pessoa = {}
+        },
 
         // ------------CARREGAR TELA ---------------------------
         async carregarPessoas() {
@@ -191,6 +226,15 @@ export default {
             this.carregarPessoas()
             //Limpar imput
             this.pessoa.nome = ""
+            this.cancelar()
+
+            //----Mensagem ------
+            this.mensagens.salvoSucesso = true
+            //temporizador
+            setTimeout(() => {
+                this.mensagens.salvoSucesso = false
+            }, 500);
+
             //mostar no console
             console.log(this.pessoas);
         },
@@ -209,6 +253,12 @@ export default {
             //Limpar imput
             this.pessoa.nome = ""
             this.contador = 0
+            //----Mensagem ------
+            this.mensagens.alteradoSucesso = true
+            //temporizador
+            setTimeout(() => {
+                this.mensagens.alteradoSucesso = false
+            }, 500);
         },
 
         async deletarPessoa(id, i) {
@@ -217,7 +267,20 @@ export default {
             //excluir do array
             this.pessoas.splice(i, 1)
             this.pessoa.nome = ""
+
+            //-----mensagem -----
+            this.cancelar()
+            this.mensagens.excluidoSucesso = true
+
+            //temporizador
+            setTimeout(() => {
+                this.mensagens.excluidoSucesso = false
+            }, 500);
+
+            // --- carregar Tela----
+
             this.carregarPessoas()
+
 
         }
     },
