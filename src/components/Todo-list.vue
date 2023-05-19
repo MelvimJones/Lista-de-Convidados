@@ -15,9 +15,9 @@
                                 <h2>Convidados</h2>
                                 <div class="total">
                                     <strong>TOTAL:</strong>
-                                    {{ pessoas.length }}
+                                    {{ this.quant }}
                                 </div>
-                                
+
                             </v-card-title>
                             <v-card-text>
 
@@ -103,9 +103,11 @@
 .v-locale--is-ltr {
     background-color: #e5d1b8;
 }
-.total{
+
+.total {
     font-family: math;
 }
+
 .v-table>.v-table__wrapper>table>thead>tr>th {
     padding: 0 5px;
     height: auto;
@@ -130,9 +132,6 @@
     width: 100%;
     height: auto;
 }
-
-.botoes {}
-
 .botoesD {
     display: flex;
     justify-content: flex-end;
@@ -155,12 +154,11 @@ export default {
 
     data() {
         return {
-            username: "",
             contador: 0,
-            lista: [],
             posicao: "",
             pessoas: [],
-            pessoa: {}
+            pessoa: {},
+            quant: ''
 
 
         };
@@ -175,6 +173,7 @@ export default {
 
             //Ao finalizar o request, carregue os dados em json
             this.pessoas = await request.data
+            this.quant = this.pessoas.length
 
             //exibir no consoel
             console.log(this.pessoas)
@@ -224,6 +223,7 @@ export default {
 
     },
     async created() {
+        
         console.log("Created....")
         await this.carregarPessoas()
     }
