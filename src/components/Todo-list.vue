@@ -1,9 +1,5 @@
 
-<!-- <v-data-table :headers="headers" :items="items" :item-key="itemKey" hide-default-footer class="elevation-1"> -->
-
-
- 
-    
+  
 <template>
     <v-app>
         <v-main>
@@ -13,15 +9,15 @@
                         <v-card>
                             <v-card-title class="text-center">
                                 <h2>Convidados</h2>
-                                <div class="total">
-                                    <strong>TOTAL:</strong>
-                                    {{ this.quant }}
-                                </div>
+                                <v-expand-x-transition>
+                                    <div class="total">
+                                        <strong>TOTAL:</strong>
+                                        {{ this.quant }}
+                                    </div>
+                                </v-expand-x-transition>
 
                             </v-card-title>
                             <v-card-text>
-
-
                                 <!-- ------------IMPUT-------------------->
 
                                 <v-card class="mx-auto" color="grey-lighten-3" max-width="400">
@@ -31,7 +27,6 @@
                                             variant="solo" label="Convidados" append-inner-icon="mdi-content-save"
                                             single-line hide-details @click:append-inner="cadastrarPessoas()">
                                         </v-text-field>
-
 
                                         <!-- IMPUT PARA EDITAR -->
                                         <v-text-field v-if="contador == 1" v-model="pessoa.nome" density="compact"
@@ -49,8 +44,7 @@
                                     <v-alert v-if="mensagens.alteradoSucesso" type="info">MODIFICADO</v-alert>
                                 </v-expand-transition>
 
-
-                                <!-- teste -->
+                                <!-- -----------TABELA------------- -->
                                 <v-table :headers="headers" :items="items" :item-key="itemKey" hide-default-footer
                                     class="elevation-2">
                                     <thead>
@@ -62,15 +56,14 @@
                                                 <strong>NOMES</strong>
                                             </th>
                                             <th class="botoesD">
-
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        
+
                                         <tr v-for="(post, i) in pessoas" :key="post">
                                             <td class="quant">{{ i + 1 }}</td>
-                                        <td class="nome">{{ post.nome }}</td>
+                                            <td class="nome">{{ post.nome }}</td>
                                             <td>
                                                 <div class="botoesD">
                                                     <v-col cols="auto">
@@ -88,15 +81,6 @@
                                         </tr>
                                     </tbody>
                                 </v-table>
-
-
-                                <!-- ------------TESTE INICIO--------------------->
-
-                                <!---------------TESTE FINAL --------------------->
-
-
-
-
                             </v-card-text>
                         </v-card>
                     </v-col>
@@ -185,15 +169,13 @@ export default {
                 salvoSucesso: false,
                 excluidoSucesso: false,
                 alteradoSucesso: false
-
             },
             contador: 0,
             posicao: "",
             pessoas: [],
             pessoa: {},
-            quant: ''
-
-
+            quant: '',
+            url: 'https://api-my-app32-git-main-melvimjones.vercel.app/person'
         };
     },
 
@@ -202,23 +184,9 @@ export default {
             this.pessoa = {}
         },
 
-        // ------------CARREGAR TELA ---------------------------
-        async carregarPessoas() {
-            //request para API, que retorna uma promisse 
-            let request = await axios.get("https://api-my-app32-git-main-melvimjones.vercel.app/person")
-
-            //Ao finalizar o request, carregue os dados em json
-            this.pessoas = await request.data
-            this.pessoas.reverse()
-            //Quantidade Total
-            this.quant = this.pessoas.length
-            //exibir no consoel
-            console.log(this.pessoas)
-        },
-
-        // ------------CADASTRAR PESSOAS ---------------------------
+        // ------------ (CREATE) Cadastrar ---------------------------
         async cadastrarPessoas() {
-            let request = await axios.post("https://api-my-app32-git-main-melvimjones.vercel.app/person", this.pessoa)
+            let request = await axios.post(this.url, this.pessoa)
             let people = await request.data
             //Add na array
             this.pessoas.push(people)
@@ -239,6 +207,23 @@ export default {
             console.log(this.pessoas);
         },
 
+        // ------------ (READ) Carregar Tela ---------------------------
+        async carregarPessoas() {
+            //request para API, que retorna uma promisse 
+            let request = await axios.get("https://api-my-app32-git-main-melvimjones.vercel.app/person")
+
+            //Ao finalizar o request, carregue os dados em json
+            this.pessoas = await request.data
+            this.pessoas.reverse()
+            //Quantidade Total
+            this.quant = this.pessoas.length
+            //exibir no consoel
+            console.log(this.pessoas)
+        },
+
+
+
+        // ------------(UPDATE) Editar cadastro--------------------------
         async editarPessoa(id, i) {
             //acessar do array e colocar no imput
             this.pessoa = { ...this.pessoas[i] }
@@ -247,6 +232,7 @@ export default {
         },
 
         async alterarPessoa() {
+
             await axios.patch("https://api-my-app32-git-main-melvimjones.vercel.app/person/" + this.pessoa._id, this.pessoa)
             //alterar na tela
             this.carregarPessoas()
@@ -260,10 +246,11 @@ export default {
                 this.mensagens.alteradoSucesso = false
             }, 1000);
         },
-
+        // ------------(DELETE) Remover cadastro -----------------------
         async deletarPessoa(id, i) {
 
-            await axios.delete("https://api-my-app32-git-main-melvimjones.vercel.app/person/" + id)
+            if (window.confirm("DESEJA EXCLUIR?")) {
+                await axios.delete("https://api-my-app32-git-main-melvimjones.vercel.app/person/" + id)
             //excluir do array
             this.pessoas.splice(i, 1)
             this.pessoa.nome = ""
@@ -278,16 +265,17 @@ export default {
             }, 1000);
 
             // --- carregar Tela----
-
             this.carregarPessoas()
+            }
 
+            
 
         }
     },
-    async created() {
+     async created() {
         console.log("Created....")
         await this.carregarPessoas()
-    }
+    } 
 };
 </script>
       
