@@ -91,6 +91,10 @@
 </template>
     
 <style>
+
+.v-field.v-field--appended {
+    background-color: rgb(255, 255, 255);
+}
 .bg-info {
     display: flex;
     padding: 1px;
@@ -111,7 +115,7 @@
 
 
 .v-locale--is-ltr {
-    background-color: #e5d1b8;
+    background-color: #8f82f9;
 }
 
 .total {
