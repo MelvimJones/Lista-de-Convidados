@@ -174,8 +174,7 @@ export default {
             posicao: "",
             pessoas: [],
             pessoa: {},
-            quant: '',
-            url: 'https://api-my-app32-git-main-melvimjones.vercel.app/person'
+            quant: ''
         };
     },
 
@@ -186,7 +185,7 @@ export default {
 
         // ------------ (CREATE) Cadastrar ---------------------------
         async cadastrarPessoas() {
-            let request = await axios.post(this.url, this.pessoa)
+            let request = await axios.post('https://api-my-app32-git-main-melvimjones.vercel.app/person', this.pessoa)
             let people = await request.data
             //Add na array
             this.pessoas.push(people)
